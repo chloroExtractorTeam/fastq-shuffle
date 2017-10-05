@@ -91,3 +91,8 @@ if (exists $option{verbose})
     $logger->more_logging($option{verbose});
 }
 
+if (exists $option{debug})
+{
+    Log::Log4perl->easy_init($DEBUG);
+}
+
