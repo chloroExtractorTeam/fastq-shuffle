@@ -19,8 +19,8 @@ install:
 script:
     - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t/*.t
 after_success:
-    - cover
-    - cove -report coveralls
+    - cover -report
+    - cover -report coveralls
 matrix:
     allow_failures:
        - perl: "5.8"
