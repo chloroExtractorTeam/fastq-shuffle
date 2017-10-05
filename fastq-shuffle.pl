@@ -65,7 +65,7 @@ GetOptions(
           num-temp-files|t=s
           shuffle-block-size|s=s
           version|V
-          verbose|v
+          verbose|v+
           debug|D
           help|h
      ) ) or pod2usage(1);
@@ -81,5 +81,13 @@ if (exists $option{help} && $option{help})
 if (exists $option{version} && $option{version}) {
     print "$VERSION\n";
     exit 0;
+}
+
+use Log::Log4perl qw(:easy);
+Log::Log4perl->easy_init($WARN);
+my $logger = get_logger();
+if (exists $option{verbose})
+{
+    $logger->more_logging($option{verbose});
 }
 
