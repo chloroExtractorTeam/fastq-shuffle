@@ -16,17 +16,22 @@ External and Hierarchical Memory".
 
     fastq-shuffle.pl -1 reads.fq -2 mates.fq
 
+    # multiple input files
+    fastq-shuffle.pl -1 reads1.fq,reads2.fq -2 mates1.fq,mates2.fq
+
+    # alternative form of multiple input files
+    fastq-shuffle.pl -1 reads1.fq -2 mates1.fq -1 reads2.fq -2 mates2.fq
+
 =head1 OPTIONS
 
 =over 4
 
-=item -1/--reads
+=item -1/--reads and -2/--mates
 
-Input file for first read.
-
-=item -2/--mates
-
-Input file for second read.
+Input file(s) for first and seconde read. Might be used several times
+or multiple files seperated by comma are provided. WARNING: The order
+of files for first and second read has to match, but will be displayed
+for a check.
 
 =item -t/--num-temp-files [0/auto]
 
@@ -55,13 +60,15 @@ use version 0.77; our $VERSION = version->declare("v0.1.0");
 my %option = (
     'num-temp-files'     => 'auto',
     'temp-directory'     => undef,
-    'shuffle-block-size' => '1G'
+    'shuffle-block-size' => '1G',
+    'reads'              => [],
+    'mates'              => [],
     );
 
 GetOptions(
     \%option, qw(
-          1|reads=s
-          2|mates=s
+          reads|2=s@
+          mates|1=s@
           num-temp-files|t=s
           shuffle-block-size|s=s
           version|V
@@ -83,7 +90,7 @@ if (exists $option{version} && $option{version}) {
     exit 0;
 }
 
-use Log::Log4perl qw(:easy);
+use Log::Log4perl qw(:easy :no_extra_logdie_message);
 Log::Log4perl->easy_init($WARN);
 my $logger = get_logger();
 if (exists $option{verbose})
@@ -95,4 +102,15 @@ if (exists $option{debug})
 {
     Log::Log4perl->easy_init($DEBUG);
 }
+
+# check input files
+@{$option{reads}} = split(",", join(",", @{$option{reads}}));
+@{$option{mates}} = split(",", join(",", @{$option{mates}}));
+
+# same number of files?
+unless (@{$option{reads}} == @{$option{mates}})
+{
+    $logger->logdie(sprintf("ERROR Number of first and second read files are different (%d vs. %d), but need to be the same!", 0+@{$option{reads}}, 0+@{$option{mates}}));
+}
+
 
