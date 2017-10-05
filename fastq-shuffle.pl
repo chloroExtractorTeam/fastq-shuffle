@@ -71,8 +71,11 @@ GetOptions(
      ) ) or pod2usage(1);
 
 
-# help
-$option{help} && pod2usage(1);
+# help requested?
+if (exists $option{help} && $option{help})
+{
+    pod2usage(1);
+}
 
 # version requested?
 if (exists $option{version} && $option{version}) {
