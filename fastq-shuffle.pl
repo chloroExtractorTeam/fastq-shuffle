@@ -113,4 +113,11 @@ unless (@{$option{reads}} == @{$option{mates}})
     $logger->logdie(sprintf("ERROR Number of first and second read files are different (%d vs. %d), but need to be the same!", 0+@{$option{reads}}, 0+@{$option{mates}}));
 }
 
+# do all files exist?
+my @missing_files = grep { ! -e $_ } (@{$option{reads}}, @{$option{mates}});
+if (@missing_files)
+{
+    $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
+}
+
 
