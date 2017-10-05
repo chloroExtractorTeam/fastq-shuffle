@@ -50,6 +50,8 @@ into a RAM disk.
 
 =cut
 
+use version 0.77; our $VERSION = version->declare("v0.1.0");
+
 my %option = (
     'num-temp-files'     => 'auto',
     'temp-directory'     => undef,
@@ -72,4 +74,9 @@ GetOptions(
 # help
 $option{help} && pod2usage(1);
 
+# version requested?
+if (exists $option{version} && $option{version}) {
+    print "$VERSION\n";
+    exit 0;
+}
 
