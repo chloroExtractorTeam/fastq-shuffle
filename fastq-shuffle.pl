@@ -6,6 +6,8 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 
+my $random_state;
+
 =head1 fastq-shuffle.pl
 
 A small program to shuffle huge fastq files using external memory
@@ -36,7 +38,9 @@ for a check.
 =item -t/--num-temp-files [0/auto]
 
 Number of temporary files, the input is split in. The split files are
-loaded into memory entirely for shuffling. A value of 0 or auto calulates the number of temporary files based on the shuffle block size
+loaded into memory entirely for shuffling. A value of 0 or auto
+calulates the number of temporary files based on the shuffle block
+size
 
 =item -s/--shuffle-block-size [1G]
 
@@ -51,6 +55,13 @@ The temporary files are created inside the given folder. One might use
 that option to put the temporary files onto fast disks, eg. SSDs or
 into a RAM disk.
 
+=item -r/--seed/--randomseed [ current unixtime stamp ]
+
+The seed for the random generator. Strings can be used as seed due to
+the basis is a cryptographic hash algorithm (SHA-256). Used to provide
+reproducebility. In case the same input files (in same order) and the
+same random seed is provided, the shuffle results are identical.
+
 =back
 
 =cut
@@ -63,6 +74,7 @@ my %option = (
     'shuffle-block-size' => '1G',
     'reads'              => [],
     'mates'              => [],
+    'seed'               => time()
     );
 
 GetOptions(
@@ -75,6 +87,7 @@ GetOptions(
           verbose|v+
           debug|D
           help|h
+          seed|randomseed|r=s
      ) ) or pod2usage(1);
 
 
@@ -103,6 +116,9 @@ if (exists $option{debug})
     Log::Log4perl->easy_init($DEBUG);
 }
 
+# initialize the random number generator
+$logger->error("Random generator was initialized with the value '".::srand($option{seed})."'");
+
 # check input files
 @{$option{reads}} = split(",", join(",", @{$option{reads}}));
 @{$option{mates}} = split(",", join(",", @{$option{mates}}));
@@ -126,4 +142,35 @@ if (@missing_files)
     $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
 }
 
+# Random generator is based on the implementation at
+# http://wellington.pm.org/archive/200704/randomness/#slide19
+# (paragraph Cryptographic random number generators)
+use Digest;
 
+sub srand{
+    my $seed = shift || (time());
+    $random_state = {
+        digest => new Digest ("SHA-256"),
+        counter => 0,
+        waiting => [],
+        prev    => $seed
+    };
+
+    return $seed;
+}
+
+sub rand{
+    my $range = shift || 1.0;
+    ::srand() unless defined $random_state;
+
+    if (! @{$random_state->{waiting}}){
+        $random_state->{digest}->reset();
+        $random_state->{digest}->add($random_state->{counter} ++ .
+                                     $random_state->{prev});
+        $random_state->{prev} = $random_state->{digest}->digest();
+        my @ints = unpack("Q*", $random_state->{prev}); # 64 bit unsigned integers
+        $random_state->{waiting} = \@ints;
+    }
+    my $int = shift @{$random_state->{waiting}};
+    return $range * $int / 2**64;
+}

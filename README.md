@@ -40,4 +40,11 @@ OPTIONS
         The temporary files are created inside the given folder. One might use
         that option to put the temporary files onto fast disks, eg. SSDs or
         into a RAM disk.
+
+    -r/--seed/--randomseed [ current unixtime stamp ]
+        The seed for the random generator. Strings can be used as seed due to
+        the basis is a cryptographic hash algorithm (SHA-256). Used to provide
+        reproducebility. In case the same input files (in same order) and the
+        same random seed is provided, the shuffle results are identical.
+
 ```
