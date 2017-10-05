@@ -109,6 +109,7 @@ my $logger = get_logger();
 if (exists $option{verbose})
 {
     $logger->more_logging($option{verbose});
+    $logger->error("Verbosity level increased by ".$option{verbose});
 }
 
 if (exists $option{debug})
