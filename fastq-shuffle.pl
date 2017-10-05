@@ -107,6 +107,12 @@ if (exists $option{debug})
 @{$option{reads}} = split(",", join(",", @{$option{reads}}));
 @{$option{mates}} = split(",", join(",", @{$option{mates}}));
 
+# is the file list empty?
+if (@{$option{reads}}==0 && @{$option{mates}}==0)
+{
+    $logger->logdie("ERROR: required parameter are --reads and --mates, please provide at least on pair of input files");
+}
+
 # same number of files?
 unless (@{$option{reads}} == @{$option{mates}})
 {
