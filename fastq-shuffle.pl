@@ -3,6 +3,9 @@
 use strict;
 use warnings;
 
+use Getopt::Long;
+use Pod::Usage;
+
 =head1 fastq-shuffle.pl
 
 A small program to shuffle huge fastq files using external memory
@@ -46,4 +49,27 @@ into a RAM disk.
 =back
 
 =cut
+
+my %option = (
+    'num-temp-files'     => 'auto',
+    'temp-directory'     => undef,
+    'shuffle-block-size' => '1G'
+    );
+
+GetOptions(
+    \%option, qw(
+          1|reads=s
+          2|mates=s
+          num-temp-files|t=s
+          shuffle-block-size|s=s
+          version|V
+          verbose|v
+          debug|D
+          help|h
+     ) ) or pod2usage(1);
+
+
+# help
+$option{help} && pod2usage(1);
+
 
