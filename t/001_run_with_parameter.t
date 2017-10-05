@@ -1,7 +1,11 @@
 #!/usr/bin/env perl
 
-use Test::More tests => 2;
-use Test::Script::Run;
+use Test::More;
+
+eval "use Test::Script::Run";
+plan skip_all => "Test::Script::Run required for testing pod coverage" if $@;
+
+plan tests => 2;
 
 my ( $ret, $stdout, $stderr ) = run_script("fastq-shuffle.pl");
 
