@@ -68,4 +68,4 @@ like($stderr, qr/Maximum filesize was estimated to be 267\.95 MB/, 'Maxmim files
 like($stderr, qr/Random generator was initialized with the value/, 'Random generator initialization message present');
 like($stderr, qr/Starting processing of file pair \S+at_simulated1.fq --- \S+at_simulated2.fq/, 'Starting processing message present');
 like($stderr, qr/Import of 431264 sequence blocks finished. Starting shuffling.../, 'Import successful message present and correct number imported');
-like($stderr, qr/Size of buffer for shuffle will be 50 MB and 6 temporary files will be used/, 'Buffer size and temp files message present');
+like($stderr, qr/Size of buffer for shuffle will be 44 MB and 6 temporary files will be used/, 'Buffer size and temp files message present');
