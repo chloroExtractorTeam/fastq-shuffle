@@ -84,7 +84,7 @@ will be stored into the folder of the input files.
 
 =cut
 
-use version 0.77; our $VERSION = version->declare("v0.1.0");
+use version 0.77; our $VERSION = version->declare("v0.9.0");
 
 my %option = (
     'num-temp-files'     => 'auto',
