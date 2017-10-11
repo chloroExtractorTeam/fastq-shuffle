@@ -130,12 +130,13 @@ my $logger = get_logger();
 if (exists $option{verbose})
 {
     $logger->more_logging($option{verbose});
-    $logger->error("Verbosity level increased by ".$option{verbose});
+    ALWAYS "Verbosity level increased by ".$option{verbose};
 }
 
 if (exists $option{debug})
 {
     Log::Log4perl->easy_init($DEBUG);
+    ALWAYS "Verbosity level set to DEBUG";
 }
 
 # check input files
