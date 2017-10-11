@@ -404,6 +404,33 @@ sub create_output_filenames
 }
 
 
+sub read_from_temp_file
+{
+    my ($file, $index, $buffer) = @_;
+
+    $buffer->{input} = "";
+    $buffer->{index} = [];
+
+    open(FH, "<", $file) || $logger->logdie($!);
+    {
+	local $/;
+	$buffer->{input} = <FH>;
+    }
+    close(FH) || $logger->logdie($!);
+
+    open(FH, "<", $index) || $logger->logdie($!);
+    {
+	local $/;
+	my @dat = unpack("(QLL)*", scalar <FH>);
+
+	for(my $i=0; $i<@dat; $i+=3)
+	{
+	    push(@{$buffer->{index}}, { offset => $dat[$i], lenA => $dat[$i+1], lenB => $dat[$i+2] });
+	}
+    }
+    close(FH) || $logger->logdie($!);
+}
+
 sub write_to_temp_file
 {
     my ($blockA, $blockB, $temp_file) = @_;
