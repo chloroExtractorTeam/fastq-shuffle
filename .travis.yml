@@ -9,17 +9,13 @@ perl:
     - "5.22"
 sudo:
   false
-addons:
-  apt:
-    packages:
-    - libarchive-extract-perl
 before_install:
     - git clone git://github.com/haarg/perl-travis-helper
     - source perl-travis-helper/init
     - build-perl
     - perl -V
 install:
-    - cpanm Term::ProgressBar Log::Log4perl FindBin Pod::Usage Devel::Cover Devel::Cover::Report::Coveralls Test::Script::Run
+    - cpanm Archive::Extract Term::ProgressBar Log::Log4perl FindBin Pod::Usage Devel::Cover Devel::Cover::Report::Coveralls Test::Script::Run
 script:
     - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t/*.t
 after_success:
