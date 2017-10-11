@@ -143,7 +143,15 @@ if (uc($option{'num-temp-files'}) eq "AUTO")
     $option{'num-temp-files'} = ceil($filesize/$option{'shuffle-block-size'});
 }
 
-ALWAYS sprintf("Size of buffer for shuffle will be %d %s and %d temporary files will be used", formatfilesize($option{'shuffle-block-size'}), $option{'num-temp-files'});;
+# if buffer size is larger than file size we can shuffle in memory
+if ($option{'shuffle-block-size'}/2 > $filesize)
+{
+    $option{'num-temp-files'} = 0;
+    ALWAYS "Buffer size is larger than size of input file, therefore in memory shuffle will be used and no temporary files will be generated";
+} else {
+    ALWAYS sprintf("Size of buffer for shuffle will be %d %s and %d temporary files will be used", formatfilesize($option{'shuffle-block-size'}), $option{'num-temp-files'});
+}
+
 
 # initialize the random number generator
 ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
