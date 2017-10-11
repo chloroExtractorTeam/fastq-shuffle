@@ -12,7 +12,7 @@ use Test::More;
 eval "use Test::Script::Run";
 plan skip_all => "Test::Script::Run required for testing" if $@;
 
-plan tests => 8;
+plan tests => 10;
 
 my %files = (
     'at_simulated1.fq' => "87ca3af8458674083db501f50cf33770",
@@ -70,3 +70,6 @@ like($stderr, qr/Starting processing of file pair \S+at_simulated1.fq --- \S+at_
 like($stderr, qr/Import of 431264 sequence blocks finished. Starting shuffling.../, 'Import successful message present and correct number imported');
 like($stderr, qr/Buffer size is larger than size of input file, therefore in memory shuffle will be used and no temporary files will be generated/, 'In memory shuffling message present');
 
+( $ret, $stdout, $stderr ) = run_script("fastq-shuffle.pl", [ "-1", $filenames[0], "-2", $filenames[1] ]);
+is(Test::Script::Run::last_script_exit_code(), 1, 'Rerunning with simulated data should exit with error code 1');
+like($stderr, qr/Outputfile\(s\) \([^)]+\) exist! Please delete and restart or specify another output directory/, 'Existing files message present');
