@@ -63,6 +63,13 @@ the basis is a cryptographic hash algorithm (SHA-256). Used to provide
 reproducebility. In case the same input files (in same order) and the
 same random seed is provided, the shuffle results are identical.
 
+=item -o/--outdir
+
+Specifies the output directory for the shuffled files. The shuffled
+file names will be extended by the suffix C<.shuffled> and stored into
+the specified directory. If no output directory is provided, the files
+will be stored into the folder of the input files.
+
 =back
 
 =cut
@@ -75,7 +82,8 @@ my %option = (
     'shuffle-block-size' => '1G',
     'reads'              => [],
     'mates'              => [],
-    'seed'               => time()
+    'seed'               => time(),
+    'outdir'             => undef
     );
 
 GetOptions(
@@ -89,6 +97,7 @@ GetOptions(
           debug|D
           help|h
           seed|randomseed|r=s
+          outdir|o=s
      ) ) or pod2usage(1);
 
 
