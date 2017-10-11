@@ -9,6 +9,13 @@ use POSIX;
 
 my $random_state;
 
+my @temp_files = ();
+
+my %buffer = (
+    input    => "",       # unshuffled input
+    index    => []        # index for input
+    );
+
 =head1 fastq-shuffle.pl
 
 A small program to shuffle huge fastq files using external memory
