@@ -403,6 +403,31 @@ sub create_output_filenames
     return ($outfile1, $outfile2);
 }
 
+sub shuffle_memory_and_write_files
+{
+    my ($ref_buffer, $file1, $file2) = @_;
+
+    # shuffle in memory
+    for(my $i = @{$ref_buffer->{index}}-1; $i >= 1; $i--)
+    {
+	my $j = rand($i);
+
+	($ref_buffer->{index}[$i], $ref_buffer->{index}[$j]) = ($ref_buffer->{index}[$j], $ref_buffer->{index}[$i]);
+    }
+
+    open(my $f1, ">>", $file1) || $logger->logdie($!);
+    open(my $f2, ">>", $file2) || $logger->logdie($!);
+
+    foreach my $next_item (@{$ref_buffer->{index}})
+    {
+	print $f1 substr($ref_buffer->{input}, $next_item->{offset}, $next_item->{lenA});
+	print $f2 substr($ref_buffer->{input}, $next_item->{offset}+$next_item->{lenA}, $next_item->{lenB});
+    }
+
+    close($f1) || $logger->logdie($!);
+    close($f2) || $logger->logdie($!);
+}
+
 
 sub read_from_temp_file
 {
