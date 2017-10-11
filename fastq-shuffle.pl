@@ -175,3 +175,38 @@ sub rand{
     my $int = shift @{$random_state->{waiting}};
     return $range * $int / 2**64;
 }
+
+sub formatfilesize {
+    my ($size, $si, $base) = @_;
+
+    my $units = [qw(B KB MB GB TB PB)];
+
+    unless (defined $base)
+    {
+	$base = 1024;
+    }
+
+    if ($base == 1024 || $base == 2)
+    {
+	$base = 1024;
+    } elsif ($base == 1000 || $base == 10)
+    {
+	$base = 1000;
+    } else {
+	die "Base has to be 2 or 10 or 1024/1000\n";
+    }
+
+    if($base == 1024 && $si)
+    {
+	$units = [qw(B KiB MiB GiB TiB PiB)];
+    }
+
+    my $exp = 0;
+
+    for (@$units) {
+        last if $size < $base;
+        $size /= $base;
+        $exp++;
+    }
+    return wantarray ? ($size, $units->[$exp]) : sprintf("%.2f %s", $size, $units->[$exp]);
+}
