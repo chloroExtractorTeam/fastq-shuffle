@@ -118,7 +118,7 @@ if (exists $option{debug})
 }
 
 # initialize the random number generator
-$logger->error("Random generator was initialized with the value '".::srand($option{seed})."'");
+ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
 
 # check input files
 @{$option{reads}} = split(",", join(",", @{$option{reads}}));
