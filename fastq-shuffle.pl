@@ -92,6 +92,7 @@ GetOptions(
           mates|2=s@
           num-temp-files|t=s
           shuffle-block-size|s=s
+          temp-directory|d=s
           version|V
           verbose|v+
           debug|D
