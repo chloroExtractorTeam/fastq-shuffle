@@ -7,6 +7,8 @@ use Getopt::Long;
 use Pod::Usage;
 use POSIX;
 use File::Temp;
+use File::Basename;
+use File::Spec;
 
 my $random_state;
 
@@ -371,3 +373,33 @@ sub parse_size_spec
 
     return sprintf("%.0f", $number * $factor);
 }
+
+sub create_output_filenames
+{
+    my ($file1, $file2, $outdir) = @_;
+
+    # generate new filenames
+    my ($file1_fn, $file1_dir) = fileparse($file1);
+    my ($file2_fn, $file2_dir) = fileparse($file2);
+
+    # write output to shuffled files
+    if (defined $outdir)
+    {
+	$file1_dir = $outdir;
+	$file2_dir = $outdir;
+    }
+
+    my $outfile1 = File::Spec->catfile($file1_dir, $file1_fn.".shuffled");
+    my $outfile2 = File::Spec->catfile($file2_dir, $file2_fn.".shuffled");
+
+    # check if the files exist
+    my @existing_files = grep {-e $_} ($outfile1, $outfile2);
+
+    if(@existing_files)
+    {
+	$logger->logdie(sprintf("Outputfile(s) (%s) exist! Please delete and restart or specify another output directory", join(", ", map { "'$_'" } (@existing_files))));
+    }
+
+    return ($outfile1, $outfile2);
+}
+
