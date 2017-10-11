@@ -12,7 +12,7 @@ use Test::More;
 eval "use Test::Script::Run";
 plan skip_all => "Test::Script::Run required for testing" if $@;
 
-#plan tests => 8;
+plan tests => 8;
 
 my %files = (
     'at_simulated1.fq' => "87ca3af8458674083db501f50cf33770",
@@ -68,5 +68,5 @@ like($stderr, qr/Maximum filesize was estimated to be 267\.95 MB/, 'Maxmim files
 like($stderr, qr/Random generator was initialized with the value/, 'Random generator initialization message present');
 like($stderr, qr/Starting processing of file pair \S+at_simulated1.fq --- \S+at_simulated2.fq/, 'Starting processing message present');
 like($stderr, qr/Import of 431264 sequence blocks finished. Starting shuffling.../, 'Import successful message present and correct number imported');
+like($stderr, qr/Buffer size is larger than size of input file, therefore in memory shuffle will be used and no temporary files will be generated/, 'In memory shuffling message present');
 
-done_testing;
