@@ -138,6 +138,29 @@ if (exists $option{debug})
     Log::Log4perl->easy_init($DEBUG);
 }
 
+# check input files
+@{$option{reads}} = split(",", join(",", @{$option{reads}}));
+@{$option{mates}} = split(",", join(",", @{$option{mates}}));
+
+# is the file list empty?
+if (@{$option{reads}}==0 && @{$option{mates}}==0)
+{
+    $logger->logdie("ERROR: required parameter are --reads and --mates, please provide at least on pair of input files");
+}
+
+# same number of files?
+unless (@{$option{reads}} == @{$option{mates}})
+{
+    $logger->logdie(sprintf("ERROR Number of first and second read files are different (%d vs. %d), but need to be the same!", 0+@{$option{reads}}, 0+@{$option{mates}}));
+}
+
+# do all files exist?
+my @missing_files = grep { ! -e $_ } (@{$option{reads}}, @{$option{mates}});
+if (@missing_files)
+{
+    $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
+}
+
 # estimate file size
 my $filesize = estimate_filesize($option{reads}, $option{mates});
 ALWAYS "Maximum filesize was estimated to be ".formatfilesize($filesize);
@@ -198,36 +221,6 @@ if ($option{'shuffle-block-size'} >= $filesize)
 
 # initialize the random number generator
 ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
-
-# Show input file pairs
-ALWAYS "The following sequence files will be shuffled:";
-for(my $i=0; $i<@{$option{reads}}; $i++)
-{
-    ALWAYS "\t\t".$option{reads}[$i]." --- ".$option{mates}[$i];
-}
-
-# check input files
-@{$option{reads}} = split(",", join(",", @{$option{reads}}));
-@{$option{mates}} = split(",", join(",", @{$option{mates}}));
-
-# is the file list empty?
-if (@{$option{reads}}==0 && @{$option{mates}}==0)
-{
-    $logger->logdie("ERROR: required parameter are --reads and --mates, please provide at least on pair of input files");
-}
-
-# same number of files?
-unless (@{$option{reads}} == @{$option{mates}})
-{
-    $logger->logdie(sprintf("ERROR Number of first and second read files are different (%d vs. %d), but need to be the same!", 0+@{$option{reads}}, 0+@{$option{mates}}));
-}
-
-# do all files exist?
-my @missing_files = grep { ! -e $_ } (@{$option{reads}}, @{$option{mates}});
-if (@missing_files)
-{
-    $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
-}
 
 # estimates the filesize of a paired end set
 sub estimate_filesize
