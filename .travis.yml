@@ -9,6 +9,10 @@ perl:
     - "5.22"
 sudo:
   false
+addons:
+  apt:
+    packages:
+    - libarchive-extract-perl
 before_install:
     - git clone git://github.com/haarg/perl-travis-helper
     - source perl-travis-helper/init
