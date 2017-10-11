@@ -6,6 +6,7 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use POSIX;
+use File::Temp;
 
 my $random_state;
 
@@ -167,6 +168,30 @@ if ($option{'shuffle-block-size'} >= $filesize)
     ALWAYS "Buffer size is larger than size of input file, therefore in memory shuffle will be used and no temporary files will be generated";
 } else {
     ALWAYS sprintf("Size of buffer for shuffle will be %d %s and %d temporary files will be used", formatfilesize($option{'shuffle-block-size'}), $option{'num-temp-files'});
+
+    # check if a temp-directory was specified and create a temporary folder inside that directory
+    my $tempdir;
+    if (defined $option{'temp-directory'})
+    {
+	unless (-d $option{'temp-directory'})
+	{
+	    $logger->logdie("Specified temporary directory ('".$option{'temp-directory'}."') does not exist. Please specify an existing directory!");
+	}
+
+	$tempdir = File::Temp::tempdir( DIR => $option{'temp-directory'}, CLEANUP => 1) || $logger->logdie("Unable to create temporary directory: $!");
+    } else {
+
+	$tempdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1) || $logger->logdie("Unable to create temporary directory: $!");
+    }
+
+    # generate the list of temporary files
+    if ($option{'num-temp-files'} > 1)
+    {
+	foreach (2..$option{'num-temp-files'})
+	{
+	    push(@temp_files, { filename => File::Temp::tempnam($tempdir, "shuffleXXXXXX") });
+	}
+    }
 }
 
 # initialize the random number generator
