@@ -80,8 +80,8 @@ my %option = (
 
 GetOptions(
     \%option, qw(
-          reads|2=s@
-          mates|1=s@
+          reads|1=s@
+          mates|2=s@
           num-temp-files|t=s
           shuffle-block-size|s=s
           version|V
