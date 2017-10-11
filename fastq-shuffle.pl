@@ -235,3 +235,59 @@ sub formatfilesize {
     }
     return wantarray ? ($size, $units->[$exp]) : sprintf("%.2f %s", $size, $units->[$exp]);
 }
+
+# returns a number of bytes based on a formated string like 1.6 GB
+# containing a (float) number and a unit string allowed units are
+# B(Byte), kB/kiB (kilobyte), MB/MiB (Megabyte), GB/GiB (Gigabyte),
+# PB/PiB (Petabyte) unit is case insensitive
+sub parse_size_spec
+{
+    my ($input, $base) = @_;
+
+    if (! defined $base)
+    {
+	$base = 1024;
+    }
+
+    my $uc_input = uc($input);
+    unless ($uc_input =~ /^\s*([0-9.]+)\s*([KMGP]*)I?B?\s*$/)
+    {
+	$logger->error("Unable to parse number '$input'");
+	return undef;
+    }
+
+    my $number = $1;
+    my $unit = $2;
+
+    # check if number contains only on "."
+    unless ($number =~ /^[0-9]*\.*[0-9]+$|^[0-9]+$/)
+    {
+	$logger->error("Unable to parse number '$number'");
+	return undef;
+    }
+    $number = $number+0;
+
+    my $factor = 1;
+    if ($unit eq "")
+    {
+	$factor = 1;
+    }
+    elsif ($unit eq "K")
+    {
+	$factor = $base;
+    }
+    elsif ($unit eq "M")
+    {
+	$factor = $base * $base;
+    }
+    elsif ($unit eq "G")
+    {
+	$factor = $base * $base * $base;
+    }
+    elsif ($unit eq "P")
+    {
+	$factor = $base * $base * $base * $base;
+    }
+
+    return sprintf("%.0f", $number * $factor);
+}
