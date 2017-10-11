@@ -222,6 +222,83 @@ if ($option{'shuffle-block-size'} >= $filesize)
 # initialize the random number generator
 ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
 
+# Processing file pairs
+for(my $i=0; $i<@{$option{reads}}; $i++)
+{
+    ALWAYS "Starting processing of file pair ".join(" --- ", ($option{reads}[$i], $option{mates}[$i]));
+
+    $logger->debug("Opening temporary files, if required");
+    foreach my $tmpfile (@temp_files)
+    {
+	$tmpfile->{indexfilename}=$tmpfile->{filename}.".idx";
+
+	open(my $fh_tempfile, ">", $tmpfile->{filename}) || $logger->logdie("$!");
+	open(my $fh_indexfile, ">", $tmpfile->{indexfilename}) || $logger->logdie("$!");
+
+	$tmpfile->{file} = $fh_tempfile;
+	$tmpfile->{idx} = $fh_indexfile;
+    }
+
+    my ($reads_out, $mates_out) = create_output_filenames($option{reads}[$i], $option{mates}[$i], $option{outdir});
+
+    my ($first_infile, $second_infile);
+
+    open($first_infile, "<", $option{reads}[$i]) || $logger->logdie($!);
+    open($second_infile, "<", $option{mates}[$i]) || $logger->logdie($!);
+
+    my $num_blocks = 0;
+
+    while (! (eof($first_infile) || eof($second_infile)))
+    {
+	# read one fastq dataset per input file
+	my $first_block = join("", (scalar <$first_infile>, scalar <$first_infile>, scalar <$first_infile>, scalar <$first_infile>));
+	my $second_block = join("", (scalar <$second_infile>, scalar <$second_infile>, scalar <$second_infile>, scalar <$second_infile>));
+
+	$num_blocks++;
+
+	# get the temporary file for the block if
+	my $which_tempfile=0;
+	if (@temp_files)
+	{
+	    $which_tempfile = int(rand(@temp_files+1));
+	}
+
+	if ($which_tempfile == 0)
+	{
+	    # store current position in buffer
+	    my $offset = length($buffer{input});
+	    push(@{$buffer{index}}, { offset => $offset, lenA => length($first_block), lenB => length($second_block) });
+	    $buffer{input} .= $first_block . $second_block;
+	} else {
+	    write_to_temp_file(\$first_block, \$second_block, $temp_files[$which_tempfile-1]);
+	}
+    }
+
+    close($first_infile) || $logger->logdie($!);
+    close($second_infile) || $logger->logdie($!);
+
+    ALWAYS "Import of $num_blocks sequence blocks finished. Starting shuffling...";
+
+    # memory needs to be shuffled always
+    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
+
+    if (@temp_files)
+    {
+	foreach my $temp_file (@temp_files)
+	{
+	    foreach my $fh (map {$temp_file->{$_}} qw(file idx))
+	    {
+		close($fh) || $logger->logdie("$!");
+	    }
+
+	    read_from_temp_file($temp_file->{filename}, $temp_file->{indexfilename}, \%buffer);
+
+	    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
+	}
+    }
+
+}
+
 # estimates the filesize of a paired end set
 sub estimate_filesize
 {
