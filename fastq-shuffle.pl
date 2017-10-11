@@ -148,7 +148,7 @@ if (uc($option{'num-temp-files'}) ne "AUTO")
 {
     unless ($option{'num-temp-files'} =~ /^\d+$/ && $option{'num-temp-files'} > 0)
     {
-	$option{'shuffle-block-size'} = ceil($filesize/$option{'num-temp-files'}*2);
+	$option{'shuffle-block-size'} = ceil($filesize/$option{'num-temp-files'});
     } else {
 	$logger->error("Seems that you specify 0 as number of temporary files, therefore the value 'auto' is assumed");
 	$option{'num-temp-files'}="AUTO";
@@ -161,7 +161,7 @@ if (uc($option{'num-temp-files'}) eq "AUTO")
 }
 
 # if buffer size is larger than file size we can shuffle in memory
-if ($option{'shuffle-block-size'}/2 > $filesize)
+if ($option{'shuffle-block-size'} >= $filesize)
 {
     $option{'num-temp-files'} = 0;
     ALWAYS "Buffer size is larger than size of input file, therefore in memory shuffle will be used and no temporary files will be generated";
