@@ -173,7 +173,7 @@ $option{'shuffle-block-size'} = parse_size_spec($option{'shuffle-block-size'}) |
 $option{'num-temp-files'} =~ s/^\s+|\s+$//g;
 if (uc($option{'num-temp-files'}) ne "AUTO")
 {
-    unless ($option{'num-temp-files'} =~ /^\d+$/ && $option{'num-temp-files'} > 0)
+    if ($option{'num-temp-files'} =~ /^\d+$/ && $option{'num-temp-files'} > 0)
     {
 	$option{'shuffle-block-size'} = ceil($filesize/$option{'num-temp-files'});
     } else {
