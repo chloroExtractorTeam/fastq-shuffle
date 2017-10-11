@@ -143,6 +143,31 @@ if (@missing_files)
     $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
 }
 
+# estimate file size
+my $filesize = estimate_filesize($option{reads}, $option{mates});
+ALWAYS "Maximum filesize was estimated to be ".formatfilesize($filesize);
+
+# estimates the filesize of a paired end set
+sub estimate_filesize
+{
+    my ($filelist_reads, $filelist_mates) = @_;
+
+    my $filesize = 0;
+
+    for (my $i=0; $i<@{$filelist_reads}; $i++)
+    {
+	my $new_filesize = -s $filelist_reads->[$i];
+	$new_filesize += -s $filelist_mates->[$i];
+
+	if ($new_filesize > $filesize)
+	{
+	    $filesize = $new_filesize;
+	}
+    }
+
+    return $filesize;
+}
+
 # Random generator is based on the implementation at
 # http://wellington.pm.org/archive/200704/randomness/#slide19
 # (paragraph Cryptographic random number generators)
