@@ -260,7 +260,7 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
 	my $which_tempfile=0;
 	if (@temp_files)
 	{
-	    $which_tempfile = int(rand(@temp_files+1));
+	    $which_tempfile = int(::rand(@temp_files+1));
 	}
 
 	if ($which_tempfile == 0)
@@ -480,7 +480,7 @@ sub shuffle_memory_and_write_files
     # shuffle in memory
     for(my $i = @{$ref_buffer->{index}}-1; $i >= 1; $i--)
     {
-	my $j = rand($i);
+	my $j = ::rand($i);
 
 	($ref_buffer->{index}[$i], $ref_buffer->{index}[$j]) = ($ref_buffer->{index}[$j], $ref_buffer->{index}[$i]);
     }
