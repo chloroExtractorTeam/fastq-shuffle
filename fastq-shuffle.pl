@@ -403,3 +403,16 @@ sub create_output_filenames
     return ($outfile1, $outfile2);
 }
 
+
+sub write_to_temp_file
+{
+    my ($blockA, $blockB, $temp_file) = @_;
+
+    my $fh = $temp_file->{file};
+    my $idx = $temp_file->{idx};
+
+    my $offset = tell($fh);
+    my $index_entry = pack("QLL", $offset, length($$blockA), length($$blockB));
+    print $idx $index_entry;
+    print $fh $$blockA, $$blockB;
+}
