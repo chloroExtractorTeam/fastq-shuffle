@@ -152,9 +152,15 @@ if ($option{'shuffle-block-size'}/2 > $filesize)
     ALWAYS sprintf("Size of buffer for shuffle will be %d %s and %d temporary files will be used", formatfilesize($option{'shuffle-block-size'}), $option{'num-temp-files'});
 }
 
-
 # initialize the random number generator
 ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
+
+# Show input file pairs
+ALWAYS "The following sequence files will be shuffled:";
+for(my $i=0; $i<@{$option{reads}}; $i++)
+{
+    ALWAYS "\t\t".$option{reads}[$i]." --- ".$option{mates}[$i];
+}
 
 # check input files
 @{$option{reads}} = split(",", join(",", @{$option{reads}}));
