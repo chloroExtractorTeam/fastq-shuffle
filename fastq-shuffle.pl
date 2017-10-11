@@ -5,6 +5,7 @@ use warnings;
 
 use Getopt::Long;
 use Pod::Usage;
+use POSIX;
 
 my $random_state;
 
@@ -117,6 +118,33 @@ if (exists $option{debug})
     Log::Log4perl->easy_init($DEBUG);
 }
 
+# estimate file size
+my $filesize = estimate_filesize($option{reads}, $option{mates});
+ALWAYS "Maximum filesize was estimated to be ".formatfilesize($filesize);
+
+# calculate the buffer size and number of temporary files
+$option{'shuffle-block-size'} = parse_size_spec($option{'shuffle-block-size'}) || $logger->logdie("Unable to parse the shuffle-block-size");
+
+# if the number of temporary files was specified, then it will overwrite the value of shuffle-block-size
+$option{'num-temp-files'} =~ s/^\s+|\s+$//g;
+if (uc($option{'num-temp-files'}) ne "AUTO")
+{
+    unless ($option{'num-temp-files'} =~ /^\d+$/ && $option{'num-temp-files'} > 0)
+    {
+	$option{'shuffle-block-size'} = ceil($filesize/$option{'num-temp-files'}*2);
+    } else {
+	$logger->error("Seems that you specify 0 as number of temporary files, therefore the value 'auto' is assumed");
+	$option{'num-temp-files'}="AUTO";
+    }
+}
+
+if (uc($option{'num-temp-files'}) eq "AUTO")
+{
+    $option{'num-temp-files'} = ceil($filesize/$option{'shuffle-block-size'});
+}
+
+ALWAYS sprintf("Size of buffer for shuffle will be %d %s and %d temporary files will be used", formatfilesize($option{'shuffle-block-size'}), $option{'num-temp-files'});;
+
 # initialize the random number generator
 ALWAYS "Random generator was initialized with the value '".::srand($option{seed})."'";
 
@@ -142,10 +170,6 @@ if (@missing_files)
 {
     $logger->logdie("ERROR The following files can not be accessed: ", join(", ", map {"'$_'"} @missing_files));
 }
-
-# estimate file size
-my $filesize = estimate_filesize($option{reads}, $option{mates});
-ALWAYS "Maximum filesize was estimated to be ".formatfilesize($filesize);
 
 # estimates the filesize of a paired end set
 sub estimate_filesize
