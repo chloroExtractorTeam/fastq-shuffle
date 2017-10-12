@@ -5,8 +5,8 @@
 
 ```shell
     A small program to shuffle huge fastq files using external memory
-    according to Sanders (1998) "Random Permutations on Distributed, External
-    and Hierarchical Memory".
+    according to Sanders (1998) "Random Permutations on Distributed,
+    External and Hierarchical Memory".
 
 SYNOPSIS
         fastq-shuffle.pl -1 reads.fq -2 mates.fq
@@ -17,16 +17,23 @@ SYNOPSIS
         # alternative form of multiple input files
         fastq-shuffle.pl -1 reads1.fq -2 mates1.fq -1 reads2.fq -2 mates2.fq
 
+OUTPUT
+    The shuffled output files are returned with the same name as the input
+    files with the additional suffix ".shuffled". Therefore, the file
+    "read.fq" would be returned as "read.fq.shuffled". All output files are
+    stored in the same folder as the input files unless a specific output
+    directory is specified using "--outdir" option.
+
 OPTIONS
     -1/--reads and -2/--mates
-        Input file(s) for first and seconde read. Might be used several times
-        or multiple files seperated by comma are provided. WARNING: The order
-        of files for first and second read has to match, but will be displayed
-        for a check.
+        Input file(s) for first and seconde read. Might be used several
+        times or multiple files seperated by comma are provided. WARNING:
+        The order of files for first and second read has to match, but will
+        be displayed for a check.
 
     -t/--num-temp-files [0/auto]
-        Number of temporary files, the input is split in. The split files are
-        loaded into memory entirely for shuffling. A value of 0 or auto
+        Number of temporary files, the input is split in. The split files
+        are loaded into memory entirely for shuffling. A value of 0 or auto
         calulates the number of temporary files based on the shuffle block
         size
 
@@ -37,14 +44,20 @@ OPTIONS
         gigabyte.
 
     -d/--temp-directory
-        The temporary files are created inside the given folder. One might use
-        that option to put the temporary files onto fast disks, eg. SSDs or
-        into a RAM disk.
+        The temporary files are created inside the given folder. One might
+        use that option to put the temporary files onto fast disks, eg. SSDs
+        or into a RAM disk.
 
     -r/--seed/--randomseed [ current unixtime stamp ]
-        The seed for the random generator. Strings can be used as seed due to
-        the basis is a cryptographic hash algorithm (SHA-256). Used to provide
-        reproducebility. In case the same input files (in same order) and the
-        same random seed is provided, the shuffle results are identical.
+        The seed for the random generator. Strings can be used as seed due
+        to the basis is a cryptographic hash algorithm (SHA-256). Used to
+        provide reproducebility. In case the same input files (in same
+        order) and the same random seed is provided, the shuffle results are
+        identical.
 
+    -o/--outdir
+        Specifies the output directory for the shuffled files. The shuffled
+        file names will be extended by the suffix ".shuffled" and stored
+        into the specified directory. If no output directory is provided,
+        the files will be stored into the folder of the input files.
 ```
