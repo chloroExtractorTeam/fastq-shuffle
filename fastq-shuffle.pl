@@ -286,11 +286,7 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
     close($first_infile) || $logger->logdie($!);
     close($second_infile) || $logger->logdie($!);
 
-    ALWAYS "Import of $num_blocks sequence blocks finished. Starting shuffling...";
-
-    # memory needs to be shuffled always
-    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
-
+    # close the temporary files if required
     if (@temp_files)
     {
 	foreach my $temp_file (@temp_files)
@@ -299,11 +295,22 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
 	    {
 		close($fh) || $logger->logdie("$!");
 	    }
-
-	    read_from_temp_file($temp_file->{filename}, $temp_file->{indexfilename}, \%buffer);
-
-	    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
 	}
+    }
+
+    ALWAYS "Import of $num_blocks sequence blocks finished. Starting shuffling...";
+
+    for (my $i=-1; $i<@temp_files; $i++)
+    {
+	# reinitialize the random number generator to
+	::srand($option{seed}."$i");
+
+	if ($i != -1)
+	{
+	    read_from_temp_file($temp_files[$i]{filename}, $temp_files[$i]{indexfilename}, \%buffer);
+	}
+
+	shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
     }
 
 }
