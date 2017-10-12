@@ -90,6 +90,51 @@ will be stored into the folder of the input files.
 
 =back
 
+=head1 CHANGELOG
+
+=over 4
+
+=item v0.9.0
+
+First version is able to shuffle fastq files
+
+=item v0.9.1
+
+Fixed an issue with the temporary file parameter.
+
+=item v0.9.2
+
+First release candidate.
+
+Adds a changelog and licence information to the README.md and to the
+program documentaton.
+
+=back
+
+=head1 LICENCE
+
+MIT License
+
+Copyright (c) 2017 chloroExtractorTeam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 =cut
 
 use version 0.77; our $VERSION = version->declare("v0.9.2");
