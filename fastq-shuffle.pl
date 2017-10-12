@@ -303,7 +303,8 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
     for (my $i=-1; $i<@temp_files; $i++)
     {
 	# reinitialize the random number generator to
-	::srand($option{seed}."$i");
+	my $reseed = ::srand($option{seed}."$i");
+	$logger->debug("Reseeded random number generator with '$reseed'");
 
 	if ($i != -1)
 	{
