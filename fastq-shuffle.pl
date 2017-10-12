@@ -35,6 +35,14 @@ External and Hierarchical Memory".
     # alternative form of multiple input files
     fastq-shuffle.pl -1 reads1.fq -2 mates1.fq -1 reads2.fq -2 mates2.fq
 
+=head1 OUTPUT
+
+The shuffled output files are returned with the same name as the input
+files with the additional suffix C<.shuffled>. Therefore, the file
+C<read.fq> would be returned as C<read.fq.shuffled>. All output files
+are stored in the same folder as the input files unless a specific
+output directory is specified using C<--outdir> option.
+
 =head1 OPTIONS
 
 =over 4
