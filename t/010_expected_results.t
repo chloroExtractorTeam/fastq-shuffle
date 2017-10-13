@@ -20,12 +20,12 @@ my %files = (
     );
 
 my %expected = (
-    'default1_shuffled.fq' => "747d3481edfd05208c34bc794c2e7624",
-    'default2_shuffled.fq' => "e803d6edd68fd52df383d064507dd03d",
-    'reduced1_shuffled.fq' => "e2d3d362f1acaa8cbaabdf6b6a9ec06b",
-    'reduced2_shuffled.fq' => "c7124ebbec1675212597da4a8437e3f9",
-    'filenum1_shuffled.fq' => "e2d3d362f1acaa8cbaabdf6b6a9ec06b",
-    'filenum2_shuffled.fq' => "c7124ebbec1675212597da4a8437e3f9"
+    'default1_shuffled.fq' => "b365ae2447760a96e034a9d98251712c",
+    'default2_shuffled.fq' => "94bccc1231c8a23d76a475ea487a0cb4",
+    'reduced1_shuffled.fq' => "5af21a720f33f9995153e7d61e334980",
+    'reduced2_shuffled.fq' => "16ab8c8fe9e121665377e0bc8c6668ca",
+    'filenum1_shuffled.fq' => "5af21a720f33f9995153e7d61e334980",
+    'filenum2_shuffled.fq' => "16ab8c8fe9e121665377e0bc8c6668ca"
 );
 
 my $filelocation = 'https://github.com/chloroExtractorTeam/simulate/releases/download/v1.1reduced/v1.1reduced_result.tar.bz2';

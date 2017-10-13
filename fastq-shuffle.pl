@@ -35,6 +35,14 @@ External and Hierarchical Memory".
     # alternative form of multiple input files
     fastq-shuffle.pl -1 reads1.fq -2 mates1.fq -1 reads2.fq -2 mates2.fq
 
+=head1 OUTPUT
+
+The shuffled output files are returned with the same name as the input
+files with the additional suffix C<.shuffled>. Therefore, the file
+C<read.fq> would be returned as C<read.fq.shuffled>. All output files
+are stored in the same folder as the input files unless a specific
+output directory is specified using C<--outdir> option.
+
 =head1 OPTIONS
 
 =over 4
@@ -82,9 +90,54 @@ will be stored into the folder of the input files.
 
 =back
 
+=head1 CHANGELOG
+
+=over 4
+
+=item v0.9.0
+
+First version is able to shuffle fastq files
+
+=item v0.9.1
+
+Fixed an issue with the temporary file parameter.
+
+=item v0.9.2
+
+First release candidate.
+
+Adds a changelog and licence information to the README.md and to the
+program documentaton.
+
+=back
+
+=head1 LICENCE
+
+MIT License
+
+Copyright (c) 2017 chloroExtractorTeam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 =cut
 
-use version 0.77; our $VERSION = version->declare("v0.9.0");
+use version 0.77; our $VERSION = version->declare("v0.9.2");
 
 my %option = (
     'num-temp-files'     => 'auto',
@@ -278,11 +331,7 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
     close($first_infile) || $logger->logdie($!);
     close($second_infile) || $logger->logdie($!);
 
-    ALWAYS "Import of $num_blocks sequence blocks finished. Starting shuffling...";
-
-    # memory needs to be shuffled always
-    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
-
+    # close the temporary files if required
     if (@temp_files)
     {
 	foreach my $temp_file (@temp_files)
@@ -291,11 +340,23 @@ for(my $i=0; $i<@{$option{reads}}; $i++)
 	    {
 		close($fh) || $logger->logdie("$!");
 	    }
-
-	    read_from_temp_file($temp_file->{filename}, $temp_file->{indexfilename}, \%buffer);
-
-	    shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
 	}
+    }
+
+    ALWAYS "Import of $num_blocks sequence blocks finished. Starting shuffling...";
+
+    for (my $i=-1; $i<@temp_files; $i++)
+    {
+	# reinitialize the random number generator to
+	my $reseed = ::srand($option{seed}."$i");
+	$logger->debug("Reseeded random number generator with '$reseed'");
+
+	if ($i != -1)
+	{
+	    read_from_temp_file($temp_files[$i]{filename}, $temp_files[$i]{indexfilename}, \%buffer);
+	}
+
+	shuffle_memory_and_write_files(\%buffer, $reads_out, $mates_out);
     }
 
 }
