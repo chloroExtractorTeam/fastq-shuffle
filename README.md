@@ -2,6 +2,7 @@
 
 [![Build Status](https://www.travis-ci.org/chloroExtractorTeam/fastq-shuffle.svg)](https://www.travis-ci.org/chloroExtractorTeam/fastq-shuffle)
 [![Coverage Status](https://coveralls.io/repos/github/chloroExtractorTeam/fastq-shuffle/badge.svg)](https://coveralls.io/github/chloroExtractorTeam/fastq-shuffle)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1011356.svg)](https://doi.org/10.5281/zenodo.1011356)
 
 ```shell
     A small program to shuffle huge fastq files using external memory
